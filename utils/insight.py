@@ -1,19 +1,22 @@
+"""Plain-language market insights derived from the filtered data."""
+
+from .analysis import format_inr
+
+
 def generate_insights(df):
-    insights = []
+    if df.empty:
+        return []
 
-    top_role = df["Job Title"].value_counts().idxmax()
-    insights.append(f"📌 Most in-demand role: **{top_role}**")
+    top_role = df["Job Title"].mode().iloc[0]
+    top_city = df["Location"].mode().iloc[0]
+    top_skill = df["Skill"].mode().iloc[0]
+    average_salary = format_inr(df["Salary"].mean())
+    highest_paying_role = df.groupby("Job Title")["Salary"].median().idxmax()
 
-    top_city = df["Location"].value_counts().idxmax()
-    insights.append(f"📍 Highest job postings are from: **{top_city}**")
-
-    top_skill = df["Skill"].value_counts().idxmax()
-    insights.append(f"🧠 Most required skill: **{top_skill}**")
-
-    avg_salary = int(df["Salary"].mean())
-    insights.append(f"💰 Average salary in dataset: **{avg_salary}**")
-
-    max_salary_role = df.groupby("Job Title")["Salary"].mean().idxmax()
-    insights.append(f"🚀 Highest paying role on average: **{max_salary_role}**")
-
-    return insights
+    return [
+        ("Most in-demand role", top_role),
+        ("Strongest hiring city", top_city),
+        ("Most requested skill", top_skill),
+        ("Average listed salary", average_salary),
+        ("Highest median-pay role", highest_paying_role),
+    ]
