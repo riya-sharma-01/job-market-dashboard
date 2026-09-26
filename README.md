@@ -38,7 +38,21 @@ cd job-market-dashboard
 python -m venv .venv
 ```
 
-Activate the environment, then run:
+Activate the environment:
+
+**Windows PowerShell**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**macOS/Linux**
+
+```bash
+source .venv/bin/activate
+```
+
+Then install the dependencies and start the app:
 
 ```bash
 pip install -r requirements.txt
