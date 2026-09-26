@@ -1,50 +1,46 @@
+"""Streamlit sidebar filters."""
+
 import streamlit as st
 
 
 def apply_filters(df):
-    st.sidebar.header("🔍 Filter Jobs")
+    st.sidebar.header("Explore the market")
 
-    # Job title search
-    search = st.sidebar.text_input("Search Job Title")
+    search = st.sidebar.text_input(
+        "Search job titles",
+        placeholder="e.g. Data Analyst",
+    ).strip()
 
-    # Location filter
-    locations = df["Location"].unique()
-    selected_location = st.sidebar.multiselect("Location", locations, default=locations)
+    locations = sorted(df["Location"].dropna().unique().tolist())
+    skills = sorted(df["Skill"].dropna().unique().tolist())
+    experience_levels = sorted(df["Experience"].dropna().unique().tolist())
 
-    # Skill filter
-    skills = df["Skill"].unique()
-    selected_skills = st.sidebar.multiselect("Skill", skills, default=skills)
+    selected_locations = st.sidebar.multiselect("Locations", locations)
+    selected_skills = st.sidebar.multiselect("Skills", skills)
+    selected_experience = st.sidebar.multiselect("Experience", experience_levels)
 
-    # Salary filter
     min_salary = int(df["Salary"].min())
     max_salary = int(df["Salary"].max())
-
     salary_range = st.sidebar.slider(
-        "Salary Range",
+        "Annual salary range (₹)",
         min_salary,
         max_salary,
-        (min_salary, max_salary)
+        (min_salary, max_salary),
+        step=max(10_000, (max_salary - min_salary) // 100),
     )
 
-    # Apply filters
-    filtered_df = df.copy()
-
+    filtered = df.copy()
     if search:
-        filtered_df = filtered_df[
-            filtered_df["Job Title"].str.contains(search, case=False, na=False)
+        filtered = filtered[
+            filtered["Job Title"].str.contains(search, case=False, na=False, regex=False)
         ]
+    if selected_locations:
+        filtered = filtered[filtered["Location"].isin(selected_locations)]
+    if selected_skills:
+        filtered = filtered[filtered["Skill"].isin(selected_skills)]
+    if selected_experience:
+        filtered = filtered[filtered["Experience"].isin(selected_experience)]
 
-    filtered_df = filtered_df[
-        filtered_df["Location"].isin(selected_location)
+    return filtered[
+        filtered["Salary"].between(salary_range[0], salary_range[1], inclusive="both")
     ]
-
-    filtered_df = filtered_df[
-        filtered_df["Skill"].isin(selected_skills)
-    ]
-
-    filtered_df = filtered_df[
-        (filtered_df["Salary"] >= salary_range[0]) &
-        (filtered_df["Salary"] <= salary_range[1])
-    ]
-
-    return filtered_df
