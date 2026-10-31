@@ -105,6 +105,5 @@ Ideas and improvements are welcome. Open an issue describing the problem and exp
 
 ## Author
 
-Built by [Riya Sharma](https://github.com/riya-sharma-01), a Data Science & AI student interested in practical analytics products.
+Built by [Riya Sharma](https://github.com/riya-sharma-01), a Data Science  student interested in practical analytics products.
 
-If CareerPulse helps you learn or sparks an idea, consider starring the repository.
